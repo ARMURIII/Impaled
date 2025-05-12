@@ -17,7 +17,6 @@
  */
 package ladysnake.sincereloyalty.mixin;
 
-import ladysnake.sincereloyalty.LoyalTrident;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -25,6 +24,7 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import ladysnake.sincereloyalty.LoyalTrident;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,7 +51,7 @@ public abstract class ItemEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tickItem(CallbackInfo ci) {
         // Only spawn a trident if it has a pickup delay (usually sign of it being dropped by a player)
-        if (!this.world.isClient && this.cannotPickup()) {
+        if (!this.getWorld().isClient && this.cannotPickup()) {
             if (this.veryLoyalTrident == null) {
                 this.veryLoyalTrident = LoyalTrident.hasTrueOwner(this.getStack());
             }

@@ -5,6 +5,11 @@ import net.minecraft.entity.EntityType;
 
 public class AtlanItem extends ImpaledTridentItem {
     public AtlanItem(Settings settings, EntityType<ImpaledTridentEntity> entityType) {
-        super(settings, entityType);
+        super(settings, entityType,10,0);
+    }
+
+    @Override
+    public float getDamage() {
+        return 10f;
     }
 }

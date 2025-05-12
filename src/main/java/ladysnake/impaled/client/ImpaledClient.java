@@ -1,11 +1,14 @@
 package ladysnake.impaled.client;
 
+import eu.midnightdust.lib.config.MidnightConfig;
 import ladysnake.impaled.client.render.entity.ImpaledTridentEntityRenderer;
 import ladysnake.impaled.client.render.entity.model.ImpaledTridentEntityModel;
 import ladysnake.impaled.common.Impaled;
 import ladysnake.impaled.common.init.ImpaledEntityTypes;
 import ladysnake.impaled.common.init.ImpaledItems;
 import ladysnake.impaled.common.item.ImpaledTridentItem;
+import ladysnake.impaled.config.ImpaledConfig;
+import ladysnake.sincereloyalty.SincereLoyalty;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
@@ -14,10 +17,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -29,36 +35,40 @@ public class ImpaledClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        MidnightConfig.init(Impaled.MODID, ImpaledConfig.class);
         EntityModelLayerRegistry.registerModelLayer(ATLAN, ImpaledTridentEntityModel::getAtlanTexturedModelData);
+
+        FabricLoader.getInstance().getModContainer(Impaled.MODID).ifPresent(mod ->
+            ResourceManagerHelper.registerBuiltinResourcePack(Impaled.id("2d_tridents"), mod, ResourcePackActivationType.NORMAL));
 
         for (ImpaledTridentItem item : ImpaledItems.ALL_TRIDENTS) {
             Identifier tridentId = Registries.ITEM.getId(item);
             Identifier texture = new Identifier(tridentId.getNamespace(), "textures/entity/" + tridentId.getPath() + ".png");
 
             EntityModelLayer modelLayer = item == ImpaledItems.ATLAN ? ATLAN : EntityModelLayers.TRIDENT;
-            ImpaledTridentItemRenderer tridentItemRenderer = new ImpaledTridentItemRenderer(tridentId, texture, modelLayer);
-            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(tridentItemRenderer);
-            BuiltinItemRendererRegistry.INSTANCE.register(item, tridentItemRenderer);
-            EntityRendererRegistry.register(item.getEntityType(), ctx -> new ImpaledTridentEntityRenderer(ctx, texture, modelLayer));
+            EntityRendererRegistry.register(item.getEntityType(), ctx -> new ImpaledTridentEntityRenderer(ctx, texture, modelLayer, item.getDefaultStack()));
 
             FabricModelPredicateProviderRegistry.register(item, new Identifier("throwing"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F);
-            ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> out.accept(new ModelIdentifier(tridentId.getNamespace(), tridentId.getPath() + "_in_inventory", "inventory")));
         }
 
         // Add items to groups
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((content) -> {
             content.add(ImpaledItems.ELDER_GUARDIAN_EYE);
             content.add(ImpaledItems.ANCIENT_TRIDENT);
-        });
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((content) -> {
-            content.add(ImpaledItems.PITCHFORK);
-            content.add(ImpaledItems.HELLFORK);
-            content.add(ImpaledItems.SOULFORK);
-            content.add(ImpaledItems.ELDER_TRIDENT);
-            content.add(ImpaledItems.ATLAN);
-            content.add(ImpaledItems.MAELSTROM);
+
+            content.addAfter(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, SincereLoyalty.LOYALTY_UPGRADE_SMITHING_TEMPLATE);
+            content.addAfter(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE,ImpaledItems.TRIDENT_UPGRADE_SMITHING_TEMPLATE);
         });
 
-        EntityRendererRegistry.register(ImpaledEntityTypes.GUARDIAN_TRIDENT, ctx -> new ImpaledTridentEntityRenderer(ctx, new Identifier(Impaled.MODID, "textures/entity/guardian_trident.png"), EntityModelLayers.TRIDENT));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((content) -> {
+            content.addAfter(Items.TRIDENT, ImpaledItems.MAELSTROM);
+            content.addAfter(Items.TRIDENT, ImpaledItems.ATLAN);
+            content.addAfter(Items.TRIDENT, ImpaledItems.ELDER_TRIDENT);
+            content.addAfter(Items.TRIDENT, ImpaledItems.SOULFORK);
+            content.addAfter(Items.TRIDENT, ImpaledItems.HELLFORK);
+            content.addAfter(Items.TRIDENT, ImpaledItems.PITCHFORK);
+        });
+
+        //EntityRendererRegistry.register(ImpaledEntityTypes.GUARDIAN_TRIDENT, ctx -> new ImpaledTridentEntityRenderer(ctx, new Identifier(Impaled.MODID, "textures/entity/guardian_trident.png"), EntityModelLayers.TRIDENT,ImpaledItems.GUARDIAN_TRIDENT.getDefaultStack()));
     }
 }

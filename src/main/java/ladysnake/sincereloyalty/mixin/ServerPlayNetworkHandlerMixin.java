@@ -17,10 +17,10 @@
  */
 package ladysnake.sincereloyalty.mixin;
 
-import ladysnake.sincereloyalty.LoyalTrident;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import ladysnake.sincereloyalty.LoyalTrident;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

@@ -24,7 +24,7 @@ public class ImpaledEntityTypes {
         SOULFORK = register("soulfork", createEntityType(SoulforkEntity::new));
         ELDER_TRIDENT = register("elder_trident", createDynamicEntityType(ElderTridentEntity::new));
         GUARDIAN_TRIDENT = register("guardian_trident", createDynamicEntityType(GuardianTridentEntity::new));
-        ATLAN = register("atlan", createEntityType(ImpaledTridentEntity::new));
+        ATLAN = register("atlan", createEntityType(AtlanTridentEntity::new));
     }
 
     private static <T extends Entity> EntityType<T> register(String s, EntityType<T> bombEntityType) {

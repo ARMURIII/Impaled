@@ -18,8 +18,6 @@
 package ladysnake.sincereloyalty.storage;
 
 import com.google.common.base.Preconditions;
-import ladysnake.sincereloyalty.LoyalTrident;
-import ladysnake.sincereloyalty.SincereLoyalty;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -34,6 +32,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.PersistentState;
 import org.jetbrains.annotations.NotNull;
+import ladysnake.sincereloyalty.LoyalTrident;
+import ladysnake.sincereloyalty.SincereLoyalty;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,7 +126,16 @@ public final class LoyalTridentStorage extends PersistentState {
 
             ((LoyalTrident) trident).loyaltrident_setReturnSlot(player.getInventory().selectedSlot);
             this.world.playSound(player, trident.getX(), trident.getY(), trident.getZ(), SoundEvents.ITEM_TRIDENT_RETURN, trident.getSoundCategory(), 2.0f, 0.7f);
-            ((ServerPlayerEntity) player).networkHandler.connection.send(new PlaySoundS2CPacket(Registries.SOUND_EVENT.getEntry(SoundEvents.ITEM_TRIDENT_RETURN), trident.getSoundCategory(), trident.getPos().getX(), trident.getPos().getY(), trident.getPos().getZ(), trident.distanceTo(player) / 8, 0.7f, trident.getId()));
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlaySoundS2CPacket(
+                    Registries.SOUND_EVENT.getEntry(SoundEvents.ITEM_TRIDENT_RETURN),
+                    trident.getSoundCategory(),
+                    trident.getPos().getX(),
+                    trident.getPos().getY(),
+                    trident.getPos().getZ(),
+                    trident.distanceTo(player) / 8,
+                    0.7f,
+                    trident.getId()
+            ));
             foundAny = true;
         }
         return foundAny;

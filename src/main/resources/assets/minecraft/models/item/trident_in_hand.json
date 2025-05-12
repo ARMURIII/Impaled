@@ -1,0 +1,10 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "impaled:item/trident",
+  "textures": {
+    "layer0": "impaled:item/trident"
+  },
+  "overrides": [
+    {"predicate": {"throwing": 1}, "model": "item/trident_throwing"}
+  ]
+}

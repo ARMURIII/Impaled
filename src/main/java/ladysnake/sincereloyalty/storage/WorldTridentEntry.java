@@ -17,7 +17,6 @@
  */
 package ladysnake.sincereloyalty.storage;
 
-import ladysnake.sincereloyalty.SincereLoyalty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -26,6 +25,7 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import ladysnake.sincereloyalty.SincereLoyalty;
 
 import java.util.UUID;
 

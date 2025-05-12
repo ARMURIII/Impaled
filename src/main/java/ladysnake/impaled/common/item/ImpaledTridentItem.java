@@ -1,11 +1,18 @@
 package ladysnake.impaled.common.item;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import ladysnake.impaled.common.entity.ImpaledTridentEntity;
+import ladysnake.impaled.compat.EnchancementCompat;
 import ladysnake.sincereloyalty.LoyalTrident;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -20,19 +27,31 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class ImpaledTridentItem extends TridentItem {
     EntityType<? extends ImpaledTridentEntity> type;
+    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
-    public ImpaledTridentItem(Settings settings, EntityType<? extends ImpaledTridentEntity> entityType) {
+    public ImpaledTridentItem(Settings settings, EntityType<? extends ImpaledTridentEntity> entityType, double attackDamage, double attackSpeed) {
         super(settings);
         this.type = entityType;
+        ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
+        if (attackDamage == 0) attackDamage = 8.0;
+        if (attackSpeed == 0) attackSpeed = -2.9000000953674316;
+        builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", attackDamage, EntityAttributeModifier.Operation.ADDITION));
+        builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", attackSpeed, EntityAttributeModifier.Operation.ADDITION));
+        this.attributeModifiers = builder.build();
     }
 
     public EntityType<? extends ImpaledTridentEntity> getEntityType() {
         return type;
+    }
+
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
     }
 
     @Override
@@ -105,7 +124,12 @@ public class ImpaledTridentItem extends TridentItem {
         impaledTridentEntity.setTridentStack(stack);
         impaledTridentEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 2.5F, 1.0F);
         impaledTridentEntity.updatePosition(user.getX(), user.getEyeY() - 0.1, user.getZ());
+        EnchancementCompat.tryEnableEnchantments(impaledTridentEntity, user, stack);
         return impaledTridentEntity;
+    }
+
+    public float getDamage() {
+        return 8f;
     }
 
     @Override

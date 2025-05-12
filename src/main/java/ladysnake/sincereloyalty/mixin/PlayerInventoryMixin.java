@@ -17,10 +17,10 @@
  */
 package ladysnake.sincereloyalty.mixin;
 
-import ladysnake.impaled.common.enchantment.BetterLoyalty;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import ladysnake.impaled.common.enchantment.BetterLoyalty;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

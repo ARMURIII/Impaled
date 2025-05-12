@@ -1,0 +1,7 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "impaled:item/trident_throwing",
+  "textures": {
+    "layer0": "impaled:item/trident"
+  }
+}

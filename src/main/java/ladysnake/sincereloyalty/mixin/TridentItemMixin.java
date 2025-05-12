@@ -17,7 +17,6 @@
  */
 package ladysnake.sincereloyalty.mixin;
 
-import ladysnake.sincereloyalty.LoyalTrident;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -25,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import ladysnake.sincereloyalty.LoyalTrident;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

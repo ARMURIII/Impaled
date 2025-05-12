@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ElderTridentItem extends ImpaledTridentItem {
     public ElderTridentItem(Settings settings, EntityType<? extends ImpaledTridentEntity> entityType) {
-        super(settings, entityType);
+        super(settings, entityType,0,0);
     }
 
     @Override

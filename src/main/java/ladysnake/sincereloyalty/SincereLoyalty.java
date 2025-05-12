@@ -19,33 +19,58 @@ package ladysnake.sincereloyalty;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import ladysnake.impaled.common.Impaled;
-import ladysnake.sincereloyalty.storage.LoyalTridentStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.Item;
+import net.minecraft.item.SmithingTemplateItem;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import ladysnake.impaled.common.Impaled;
+import ladysnake.sincereloyalty.TridentRecaller;
+import ladysnake.sincereloyalty.storage.LoyalTridentStorage;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class SincereLoyalty implements ModInitializer {
 
     public static final String MOD_ID = Impaled.MODID;
 
-    public static final TagKey<Item> LOYALTY_CATALYSTS = TagKey.of(RegistryKeys.ITEM, id("loyalty_catalysts"));
     public static final TagKey<Item> TRIDENTS = TagKey.of(RegistryKeys.ITEM, id("tridents"));
 
     public static final Identifier RECALL_TRIDENTS_MESSAGE_ID = id("recall_tridents");
     public static final Identifier RECALLING_MESSAGE_ID = id("recalling_tridents");
+    public static final Item LOYALTY_UPGRADE_SMITHING_TEMPLATE = new SmithingTemplateItem(
+            Text.translatable(
+                    Util.createTranslationKey("item", id("smithing_template.loyalty_upgrade.applies_to"))
+            ).formatted(Formatting.BLUE),
+            Text.translatable(
+                    Util.createTranslationKey("item", id("smithing_template.loyalty_upgrade.ingredients"))
+            ).formatted(Formatting.BLUE),
+            Text.translatable(
+                    Util.createTranslationKey("upgrade", id("loyalty_upgrade"))
+            ).formatted(Formatting.GRAY),
+            Text.translatable(
+                    Util.createTranslationKey("item", id("smithing_template.loyalty_upgrade.base_slot_description"))
+            ),
+            Text.translatable(
+                    Util.createTranslationKey("item", id("smithing_template.loyalty_upgrade.additions_slot_description"))
+            ),
+            List.of(new Identifier("item/empty_slot_sword")),
+            List.of(new Identifier("item/empty_slot_amethyst_shard"))
+    );
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -63,7 +88,7 @@ public final class SincereLoyalty implements ModInitializer {
                 return false;
             }
 
-            LoyalTridentStorage loyalTridentStorage = LoyalTridentStorage.get(player.getWorld());
+            LoyalTridentStorage loyalTridentStorage = LoyalTridentStorage.get(player.getServerWorld());
             TridentRecaller.RecallStatus newRecallStatus;
             if (loyalTridentStorage.recallTridents(player)) {
                 newRecallStatus = TridentRecaller.RecallStatus.RECALLING;
@@ -79,7 +104,7 @@ public final class SincereLoyalty implements ModInitializer {
             TridentRecaller.RecallStatus requested = buf.readEnumConstant(TridentRecaller.RecallStatus.class);
 
             server.execute(() -> {
-                LoyalTridentStorage loyalTridentStorage = LoyalTridentStorage.get(player.getWorld());
+                LoyalTridentStorage loyalTridentStorage = LoyalTridentStorage.get(player.getServerWorld());
                 TridentRecaller.RecallStatus currentRecallStatus = ((TridentRecaller) player).getCurrentRecallStatus();
                 TridentRecaller.RecallStatus newRecallStatus;
 
@@ -96,5 +121,7 @@ public final class SincereLoyalty implements ModInitializer {
                 ((TridentRecaller) player).updateRecallStatus(newRecallStatus);
             });
         });
+        Registry.register(Registries.ITEM, id("loyalty_upgrade_smithing_template"), LOYALTY_UPGRADE_SMITHING_TEMPLATE);
+        LoyaltyBindingRecipe.register();
     }
 }

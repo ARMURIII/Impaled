@@ -1,5 +1,6 @@
 package ladysnake.impaled.common.entity;
 
+import ladysnake.impaled.common.interfaces.IPlayerTargeting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -19,7 +20,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import xyz.amymialee.mialeemisc.entities.IPlayerTargeting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ElderTridentEntity extends ImpaledTridentEntity {
         if (!this.hasSearchedTarget) {
             if (this.getOwner() != null) {
                 if (this.getOwner() instanceof IPlayerTargeting targeting) {
-                    this.tridentTarget = targeting.mialeeMisc$getLastTarget();
+                    this.tridentTarget = targeting.impaled$getLastTarget();
                 } else if (this.getOwner() instanceof MobEntity mob) {
                     this.tridentTarget = mob.getTarget();
                 }
@@ -65,7 +65,7 @@ public class ElderTridentEntity extends ImpaledTridentEntity {
         }
         super.tick();
         Box box = this.getBoundingBox();
-        List<Entity> list = this.world.getOtherEntities(this, box);
+        List<Entity> list = this.getEntityWorld().getOtherEntities(this, box);
         for (Entity entity : list) {
             if (entity instanceof ItemEntity itemEntity) {
                 this.fetchedStacks.add(itemEntity.getStack());
@@ -84,8 +84,8 @@ public class ElderTridentEntity extends ImpaledTridentEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
-        if (this.world instanceof ServerWorld && this.hasChanneling() && entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
-            if (livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 200, 2))) {
+        if (this.getWorld() instanceof ServerWorld && this.hasChanneling() && entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
+            if (livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 20*15, 2))) {
                 if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
                     serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? 0.0F : 1.0F));
                 }

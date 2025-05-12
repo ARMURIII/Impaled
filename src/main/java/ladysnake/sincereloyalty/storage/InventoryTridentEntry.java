@@ -17,12 +17,12 @@
  */
 package ladysnake.sincereloyalty.storage;
 
-import ladysnake.sincereloyalty.LoyalTrident;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import ladysnake.sincereloyalty.LoyalTrident;
 
 import java.util.UUID;
 

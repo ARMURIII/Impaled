@@ -17,8 +17,6 @@
  */
 package ladysnake.sincereloyalty.mixin;
 
-import ladysnake.sincereloyalty.LoyalTrident;
-import ladysnake.sincereloyalty.storage.LoyalTridentStorage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -26,6 +24,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import ladysnake.sincereloyalty.LoyalTrident;
+import ladysnake.sincereloyalty.storage.LoyalTridentStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,12 +38,12 @@ import java.util.UUID;
 public abstract class ItemMixin {
     @Inject(method = "inventoryTick", at = @At("RETURN"))
     private void updateTridentInInventory(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        if (entity.age % 10 == 0 && !entity.world.isClient && entity instanceof PlayerEntity) {
+        if (entity.age % 10 == 0 && !entity.getWorld().isClient && entity instanceof PlayerEntity) {
             UUID trueOwner = LoyalTrident.getTrueOwner(stack);
             if (Objects.equals(trueOwner, entity.getUuid())) {
                 NbtCompound loyaltyData = Objects.requireNonNull(stack.getSubNbt(LoyalTrident.MOD_NBT_KEY));
-                if (!Objects.equals(entity.getEntityName(), loyaltyData.getString(LoyalTrident.OWNER_NAME_NBT_KEY))) {
-                    loyaltyData.putString(LoyalTrident.OWNER_NAME_NBT_KEY, entity.getEntityName());
+                if (!Objects.equals(entity.getName().getString(), loyaltyData.getString(LoyalTrident.OWNER_NAME_NBT_KEY))) {
+                    loyaltyData.putString(LoyalTrident.OWNER_NAME_NBT_KEY, entity.getName().getString());
                 }
             } else if (trueOwner != null) {
                 LoyalTridentStorage.get((ServerWorld) world).memorizeTrident(trueOwner, LoyalTrident.getTridentUuid(stack), (PlayerEntity) entity);

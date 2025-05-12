@@ -1,0 +1,13 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "impaled:item/trident",
+  "textures": {
+    "layer0": "impaled:item/trident"
+  },
+  "overrides": [
+    {"predicate": {"throwing": 1}, "model": "item/trident_throwing"},
+    {"predicate": {"mialib:gui": 1}, "model": "item/trident_inventory"},
+    {"predicate": {"mialib:ground": 1}, "model": "item/trident_inventory"},
+    {"predicate": {"mialib:fixed": 1}, "model": "item/trident_inventory"}
+  ]
+}

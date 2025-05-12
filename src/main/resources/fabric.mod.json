@@ -7,7 +7,8 @@
   "authors": [
     "doctor4t",
     "ArathainFarqoe",
-    "Pyrofab"
+    "Pyrofab",
+    "ARMURIII for the fork"
   ],
   "contact": {
     "sources": "https://github.com/Ladysnake/Impaled",
@@ -24,6 +25,9 @@
     "client": [
       "ladysnake.impaled.client.ImpaledClient",
       "ladysnake.sincereloyalty.SincereLoyaltyClient::INSTANCE"
+    ],
+    "modmenu": [
+      "ladysnake.impaled.modmenu.ImpaledModMenuImpl"
     ]
   },
   "mixins": [
@@ -34,5 +38,9 @@
     "fabricloader": ">=0.15.0",
     "java": ">=17",
     "fabric": ">=0.48.0"
+  },
+  "custom": {
+    "loom:injected_interfaces": {
+    }
   }
 }

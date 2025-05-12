@@ -17,9 +17,6 @@
  */
 package ladysnake.sincereloyalty;
 
-import ladysnake.impaled.common.init.ImpaledItems;
-import ladysnake.impaled.common.item.ImpaledTridentItem;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -27,6 +24,8 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
+import ladysnake.impaled.common.init.ImpaledItems;
+import ladysnake.impaled.common.item.ImpaledTridentItem;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -60,7 +59,7 @@ public interface LoyalTrident {
     }
 
     static boolean hasTrueOwner(ItemStack tridentStack) {
-        if (tridentStack.isIn(SincereLoyalty.TRIDENTS) && EnchantmentHelper.getLoyalty(tridentStack) > 0) {
+        if (tridentStack.isIn(SincereLoyalty.TRIDENTS) && LoyaltyBindingRecipe.isLoyalEnough(tridentStack)) {
             NbtCompound loyaltyNbt = tridentStack.getSubNbt(MOD_NBT_KEY);
             return loyaltyNbt != null && loyaltyNbt.containsUuid(TRIDENT_OWNER_NBT_KEY);
         }
@@ -78,22 +77,22 @@ public interface LoyalTrident {
         if (loyaltyData != null) {
             UUID ownerUuid = loyaltyData.getUuid(TRIDENT_OWNER_NBT_KEY);
             if (ownerUuid != null) {
-                PlayerEntity owner = thrower.world.getPlayerByUuid(ownerUuid);
+                PlayerEntity owner = thrower.getWorld().getPlayerByUuid(ownerUuid);
                 if (owner != null) {
                     TridentEntity trident;
 
                     // Yes it is fine to call Set<TridentItem>#contains(Item)
                     //noinspection SuspiciousMethodCalls
                     if (ImpaledItems.ALL_TRIDENTS.contains(tridentStack.getItem())) {
-                        trident = ((ImpaledTridentItem) tridentStack.getItem()).createTrident(thrower.world, owner, tridentStack);
+                        trident = ((ImpaledTridentItem) tridentStack.getItem()).createTrident(thrower.getWorld(), owner, tridentStack);
                     } else {
-                        trident = new TridentEntity(thrower.world, owner, tridentStack);
+                        trident = new TridentEntity(thrower.getWorld(), owner, tridentStack);
                     }
 
                     trident.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
                     trident.setVelocity(thrower.getVelocity());
                     trident.copyPositionAndRotation(thrower);
-                    thrower.world.spawnEntity(trident);
+                    thrower.getWorld().spawnEntity(trident);
                     return trident;
                 }
             }
